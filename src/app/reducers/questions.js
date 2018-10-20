@@ -16,6 +16,7 @@ export function questions(
                 ...cloneDeep(state)
             };
 
+        case QuestionsAction.UPDATE:
         case QuestionsAction.ON_FETCH_SUCCESS:
             return {
                 isLoading: false,
@@ -28,13 +29,6 @@ export function questions(
                 isLoading: false,
                 items: [],
                 error: action.payload
-            };
-
-        case QuestionsAction.UPDATE:
-            return {
-                error: null,
-                isLoading: false,
-                items: action.payload
             };
 
         default:
