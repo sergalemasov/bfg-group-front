@@ -1,10 +1,8 @@
 import { createStore, applyMiddleware } from 'redux';
-// import { createLogger } from 'redux-logger'
 import createSagaMiddleware, { END } from 'redux-saga';
 import { rootReducer } from './reducers';
 import { rootSaga } from './sagas';
 
-// const loggerMiddleware = createLogger();
 const sagaMiddleware = createSagaMiddleware();
 
 export function configureStore(preloadedState) {
@@ -14,8 +12,7 @@ export function configureStore(preloadedState) {
         rootReducer,
         preloadedState,
         applyMiddleware(
-            sagaMiddleware,
-            //loggerMiddleware
+            sagaMiddleware
         )
     )
 

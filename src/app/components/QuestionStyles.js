@@ -56,6 +56,8 @@ export const QuestionStyles = theme => ({
         backgroundColor: lime[100],
         lineHeight: scoreSize,
         textAlign: 'center',
-        marginLeft: 'auto'
+        marginLeft: 'auto',
+        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+        fontSize: theme.typography.pxToRem(14)
     }
 });
