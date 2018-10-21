@@ -6,7 +6,7 @@ export function convertQuestions(response, url) {
     }
 
     if (response.quota_remaining === 0) {
-        throw new Error(`Stack overflow quota limit exceeded!`);
+        throw new Error(`Stack overflow quota limit has been exceeded!`);
     }
 
     return response.items && response.items.length

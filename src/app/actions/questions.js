@@ -6,7 +6,8 @@ export const QuestionsAction = prefixify(
         FETCH: 'Fetch',
         ON_FETCH_SUCCESS: 'On fetch success',
         ON_FETCH_FAIL: 'On fetch fail',
-        UPDATE: 'Update'
+        UPDATE: 'Update',
+        SET_SCORE: 'Set score'
     }
 );
 
@@ -35,5 +36,15 @@ export function updateQuestions(questions) {
     return {
         type: QuestionsAction.UPDATE,
         payload: questions
+    };
+}
+
+export function setQuestionScore(score, id) {
+    return {
+        type: QuestionsAction.SET_SCORE,
+        payload: {
+            id,
+            score
+        }
     };
 }

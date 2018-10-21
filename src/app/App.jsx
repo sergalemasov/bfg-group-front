@@ -4,35 +4,64 @@ import PropTypes from 'prop-types';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { cloneDeep } from 'lodash';
-import { fetchQuestions, updateQuestions } from 'app/actions';
+import { withStyles } from '@material-ui/core/styles';
+import { fetchQuestions, updateQuestions, setQuestionScore } from 'app/actions';
 import { questionShape } from 'app/shapes';
-import { DraggableQuestion } from 'app/components';
+import { DraggableQuestion, DatePane } from 'app/components';
+
+const styles = () => ({
+    root: {
+        width: '600px',
+        margin: '0 auto'
+    }
+});
 
 class AppComponent extends Component {
+    defaultSearchDate = new Date(2018, 0, 1);
+
     state = {
         expandedId: null,
-        movingIndex: null
+        movingIndex: null,
     };
 
     constructor() {
         super();
+
         this.onQuestionClick = this.onQuestionClick.bind(this);
         this.onQuestionDoubleClick = this.onQuestionDoubleClick.bind(this);
         this.onMoveQuestion = this.onMoveQuestion.bind(this);
         this.handleDocumentClick = this.handleDocumentClick.bind(this);
         this.setContainerNode = this.setContainerNode.bind(this);
+        this.onSetScore = this.onSetScore.bind(this);
+        this.onSearchClick = this.onSearchClick.bind(this);
     }
 
     render() {
+        const {
+            expandedId,
+            movingIndex
+        } = this.state;
+
+        const {
+            questions,
+            classes
+        } = this.props;
+
         return (
-            <div ref={this.setContainerNode}>
-                {this.props.questions.map((question, index) => (
+            <div ref={this.setContainerNode}
+                className={classes.root}>
+                <DatePane
+                    search={this.onSearchClick}
+                    defaultSearchDate={this.defaultSearchDate}
+                />
+                {questions.map((question, index) => (
                     <DraggableQuestion
-                        expandedId={this.state.expandedId}
-                        movingIndex={this.state.movingIndex}
+                        expandedId={expandedId}
+                        movingIndex={movingIndex}
                         onQuestionClick={this.onQuestionClick}
                         onQuestionDoubleClick={this.onQuestionDoubleClick}
                         moveQuestion={this.onMoveQuestion}
+                        setScore={this.onSetScore}
                         index={index}
                         key={question.id}
                         {...question}
@@ -42,16 +71,13 @@ class AppComponent extends Component {
         );
     }
 
-    componentWillMount() {
-        this.props.dispatch(fetchQuestions(new Date(2018, 1, 1)));
-    }
-
     componentDidMount() {
-        document.addEventListener('click', this.handleDocumentClick)
+        document.addEventListener('click', this.handleDocumentClick);
+        this.props.dispatch(fetchQuestions(this.defaultSearchDate));
     }
 
     componentWillUnmount() {
-        document.removeEventListener('click', this.handleDocumentClick)
+        document.removeEventListener('click', this.handleDocumentClick);
     }
 
     setContainerNode(node) {
@@ -98,13 +124,26 @@ class AppComponent extends Component {
         questions.splice(toIndex, 0, from);
 
         this.props.dispatch(updateQuestions(questions));
+
+        if ([fromIndex, toIndex].includes(this.state.movingIndex)) {
+            this.setState({movingIndex: this.state.movingIndex === toIndex ? fromIndex : toIndex});
+        }
+    }
+
+    onSetScore(score, questionId) {
+        this.props.dispatch(setQuestionScore(score, questionId));
+    }
+
+    onSearchClick(date) {
+        this.props.dispatch(fetchQuestions(date));
     }
 }
 
 AppComponent.propTypes = {
     questions: PropTypes.arrayOf(
         PropTypes.shape(questionShape)
-    )
+    ),
+    classes: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -112,5 +151,7 @@ const mapStateToProps = state => ({
 });
 
 export const App = connect(mapStateToProps)(
-    DragDropContext(HTML5Backend)(AppComponent)
+    withStyles(styles)(
+        DragDropContext(HTML5Backend)(AppComponent)
+    )
 );

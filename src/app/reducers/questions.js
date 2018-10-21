@@ -31,6 +31,24 @@ export function questions(
                 error: action.payload
             };
 
+        case QuestionsAction.SET_SCORE:
+            const {
+                id,
+                score
+            } = action.payload;
+            const items = cloneDeep(state.items);
+            const updatingItem = items.find(item => item.id === id);
+
+            if (updatingItem) {
+                updatingItem.score = score;
+            }
+
+            return {
+                isLoading: false,
+                items,
+                error: null
+            };
+
         default:
             return state;
     }
