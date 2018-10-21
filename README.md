@@ -4,4 +4,5 @@
 
 ### Старт приложения
 npm install
+
 npm start
